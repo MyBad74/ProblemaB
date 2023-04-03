@@ -1,0 +1,54 @@
+Game info:
+
+D - days
+
+N - number of companies
+
+K - shares
+
+R - Fee
+
+
+1. Can't have more than K shares from a company  
+
+2. Can only perform one transaction per day ( buy or sell as many shares as he wants from that company ) 
+
+3. For every share bought, john charges a fee. P.E. if john buys 2 shares in a transaction the exchanging fee would be 2 x R
+   There is no exchanging fee in selling.´
+
+
+| INPUT |
+
+1st line - Gives 1,2 or 3 to choose which task to do
+
+2nd line - Gives values of N , D , K , R
+
+following N lines - Give the values of shares separated by days, 
+    Example: Line 1: 2 5 3 10 (meaning that in day 1, the value of the shares is 2, in day 2 the value of the shares is 3... etc)
+     
+
+
+Exemplo:
+
+Input
+
+1
+2 5 3 10
+100 20 40 200 170
+10 10 40 10 50
+
+2 empresas
+5 Dias
+3 Shares que podes ter 
+10 a mais por cada shares que compras
+
+Ordena-se a lista das shares por Dia
+    20 40 100 170 200
+    de seguida compras o maximo (3 neste caso) das shares mais baixas
+    e vendes las na mais alta (3*20 +30(fee) e vendes por 3*200)
+    600 - 90 = 510
+
+-----------------------  
+    60 120 - 60 
+    60 150 - 90 
+    150         
