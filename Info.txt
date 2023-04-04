@@ -44,7 +44,7 @@ Input
 
 Ordena-se a lista das shares por Dia
     20 40 100 170 200
-    de seguida compras o maximo (3 neste caso) das shares mais baixas
+    de seguida compras o maximo (3 neste caso) das shares mais baixas     ** METODO ERRADO **
     e vendes las na mais alta (3*20 +30(fee) e vendes por 3*200)
     600 - 90 = 510
 
