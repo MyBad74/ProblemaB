@@ -33,11 +33,12 @@ int max_profit(int D, int K, vector<int>& shares, int fee) {
 int main() {
     int D = 5;
     int K = 3;
-    vector<int> shares = {100, 20, 40, 200, 170};
-    // vector<int> shares = {10, 10, 40, 10, 50};
+    // vector<int> shares = {100, 20, 40, 200, 170};
+    vector<int> shares = {10, 10, 40, 10, 50};
     int fee = 10;
 
     cout << max_profit(D, K, shares, fee) << endl;
 
     return 0;
 }
+
