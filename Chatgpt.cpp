@@ -23,25 +23,29 @@ int main()
                     {
                         profit += 3 * prices[i] - (3 * prices[sell_day] + 3 * transaction_cost);
                     }
-                    cout << "  COMEÇO AQUI : " << prices[i] << endl;
-                    cout << "  COMEÇO AQUI : (profit)" << profit << endl;
+                    cout << "  COMECO AQUI : " << prices[i] << endl;
+                    cout << "  COMECO AQUI : (profit)" << profit << endl;
                 }
-
+                if (profit > max_profit)
+                {
+                    max_profit = profit;
+                }
                 num_actions = 0;
             }
 
             if (3 * prices[sell_day] > 3 * prices[buy_day] + 3 * transaction_cost && num_actions == 0)
             {
-                cout << "Buy day: " << buy_day << " Sell day: " << sell_day << endl;
-                profit += 3 * prices[sell_day] - (3 * prices[buy_day] + 3 * transaction_cost);
+                cout << "Buy day: " << buy_day << " Sell day: " << sell_day << " | Buy money " << 3 * prices[buy_day] + 3 * transaction_cost << " Sell money " << 3 * prices[sell_day] << endl;
+                profit = 3 * prices[sell_day] - (3 * prices[buy_day] + 3 * transaction_cost);
                 cout << "Profit: " << profit << endl;
                 num_actions = 3;
             }
+            if (profit > max_profit)
+            {
+                max_profit = profit;
+            }
         }
-        if (profit > max_profit)
-        {
-            max_profit = profit;
-        }
+        cout << "_______________________________________________________________________________________" << endl;
     }
 
     cout << "Max profit: " << max_profit << endl;
