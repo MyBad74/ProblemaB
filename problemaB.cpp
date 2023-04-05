@@ -129,9 +129,57 @@ int main()
 
     if (task == 2)
     {
+        vector<int> valores;
+        for (int i = 0; i < 4; i++)
+        {
+
+            int valor;
+            cin >> valor;
+            if (i == 0 && (valor > 100 || valor < 1))
+            {
+                return 0;
+            }
+            if (i == 1 && (valor > 20000 || valor < 1))
+            {
+                return 0;
+            }
+            if (i == 2 && (valor > 200 || valor < 1))
+            {
+                return 0;
+            }
+            if (i == 3 && (valor > 100 || valor < 1))
+            {
+                return 0;
+            }
+            valores.push_back(valor);
+        }
     }
     if (task == 3)
     {
+        vector<int> valores;
+        for (int i = 0; i < 4; i++)
+        {
+
+            int valor;
+            cin >> valor;
+            if (i == 0 && (valor > 100 || valor < 1))
+            {
+                return 0;
+            }
+            if (i == 1 && (valor > 25 || valor < 1))
+            {
+                return 0;
+            }
+            if (i == 2 && (valor > 5 || valor < 1))
+            {
+                return 0;
+            }
+            if (i == 3 && (valor > 5 || valor < 1))
+            {
+                return 0;
+            }
+            valores.push_back(valor);
+        }
     }
 }
 
