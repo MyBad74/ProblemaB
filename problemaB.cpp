@@ -10,9 +10,10 @@ int calculaT1(vector<int> &shares,int dias, int num_actions, int fee)
 {
     
     int max_profit = 0;
-    // cout << "shares: " << shares[0] << " " << shares[1] << " " << shares[2] << " " << shares[3] << " " << shares[4] << endl;
-    // cout << "fee: " << fee << endl;
-    // cout << "num_actions: " << num_actions << endl;
+    cout << "shares: " << shares[0] << " " << shares[1] << " " << shares[2] << " " << shares[3] << " " << shares[4] << endl;
+    cout << "fee: " << fee << endl;
+    cout << "num_actions: " << num_actions << endl;
+    cout << "dias: " << dias << endl;
 
     for (int buy_day = 0; buy_day < dias; buy_day++)
     {
@@ -25,26 +26,30 @@ int calculaT1(vector<int> &shares,int dias, int num_actions, int fee)
 
             if (num_actions_aux == num_actions)
             {
-                for (int i = sell_day; i < dias; i++)
+                for (int i = sell_day; i < 5; i++)
                 {
-                    if (num_actions * shares[i] > num_actions * shares[sell_day] + num_actions * fee)
+                    for( int j = i + 1; j < 5; j++)
                     {
-                        profit += num_actions * shares[i] - (num_actions * shares[sell_day] + num_actions * fee);
+                        if (num_actions * shares[j] > num_actions * shares[i] + num_actions * fee)
+                        {
+                            profit += num_actions * shares[j] - (num_actions * shares[i] + num_actions * fee);
+                        }
+                        //cout << "buy day: " << buy_day << " sell day: " << sell_day << " i: " << i << " j: " << j << endl;
+                        //cout << "Operacao do profit: 2 * " << shares[j] << " - (2 * " << shares[i] << " + 2 * " << fee << ")" << endl;
+                        //cout << "  COMECO AQUI : (profit)" << profit << endl;
                     }
-                    // cout << "  COMECO AQUI : " << shares[i] << endl;
-                    // cout << "  COMECO AQUI : (profit)" << profit << endl;
                 }
                 if (profit > max_profit)
                 {
                     max_profit = profit;
                 }
-                //num_actions_aux = 0;
+                num_actions_aux = 0;
             }
             // cout << "num actions" << num_actions << endl;
             // cout << "shares buy day: " << shares[buy_day] << endl;
             // cout << "Buy day: " << buy_day << " Sell day: " << sell_day << " | Buy money " << num_actions * shares[buy_day] + num_actions * fee << " Sell money " << num_actions * shares[sell_day] << endl;
 
-            if (num_actions * shares[sell_day] > num_actions * shares[buy_day] + num_actions * fee )
+            if (num_actions * shares[sell_day] > num_actions * shares[buy_day] + num_actions * fee && num_actions_aux == 0)
             {
                 // cout << "Buy day: " << buy_day << " Sell day: " << sell_day << " | Buy money " << num_actions * shares[buy_day] + num_actions * fee << " Sell money " << num_actions * shares[sell_day] << endl;
                 profit = num_actions * shares[sell_day] - (num_actions * shares[buy_day] + num_actions * fee);
@@ -56,10 +61,10 @@ int calculaT1(vector<int> &shares,int dias, int num_actions, int fee)
                 max_profit = profit;
             }
         }
-        cout << "_______________________________________________________________________________________" << endl;
+        //cout << "_______________________________________________________________________________________" << endl;
     }
 
-    cout << "Max profit: " << max_profit << endl;
+    //cout << "Max profit: " << max_profit << endl;
 
     return max_profit;
 }
@@ -115,6 +120,7 @@ int main()
                 }
                 val_share.push_back(share);
             }
+            // cout << " dias " << valores[1] << " num_actions " << valores[2] << " fee " << valores[3] << endl;
             // cout << "company number " << i + 1 << ": " << val_share[0] << " " << val_share[1] << " " << val_share[2] << " " << val_share[3] << " " << val_share[4] << endl;
             // add the results from calculaT1 to the max_profits array
             max_profits[i] = calculaT1(val_share, valores[1] ,valores[2], valores[3]);
@@ -123,7 +129,7 @@ int main()
         // print the max profits
         for (int i = 0; i < valores[0]; i++)
         {
-            cout << "MAX PROFIT ["<< i <<"] : " << max_profits[i] << endl;
+            cout << max_profits[i] << endl;
         }
     }
 
