@@ -1,61 +1,78 @@
 #include <iostream>
 using namespace std;
 
-int main()
-{
-    int prices[5] = {100, 20, 40, 200, 170};
-    int max_profit = 0;
-    int transaction_cost = 10;
-    int acao = 3;
 
-    for (int buy_day = 0; buy_day < 5; buy_day++)
-    {
-        int num_actions = 0;
-        int profit = 0;
+int recursivade(int prices[5], int transaction_cost, int max_days, int acao, int day, int max_profit, int dia_compra, int array[5]){
 
-        for (int sell_day = buy_day + 1; sell_day < 5; sell_day++)
-        {
+    int dia_venda = 0;
 
-            if (num_actions == 3)
-            {
-                for (int i = sell_day; i < 5; i++)
+    for (day; day < max_days; day++){
+        int nex_day = day + 1;
+
+        for(nex_day; nex_day < max_days; nex_day++){
+            
+            if(prices[day] > prices[nex_day] && acao == 2){
+                break;
+            }
+            
+            if(prices[day] < prices[nex_day] && acao == 2 && (acao * prices[nex_day] > acao*(transaction_cost + prices[day])) ){
+
+                int profit = acao * prices[nex_day] - acao*(transaction_cost + prices[day]);
+
+                //print day and buys 
+
+                cout << "dia de compra: " << day << " dia de venda: " << nex_day << endl;
+
+                cout << "profit: " << profit << endl;
+                
+
+                if(profit >= max_profit)
                 {
-                    if (acao * prices[i] > acao * prices[sell_day] + acao * transaction_cost)
-                    {
-                        profit += acao * prices[i] - (acao * prices[sell_day] + acao * transaction_cost);
-                        num_actions = 0;
+                    cout << "dia de compra: " << day << " dia de venda: " << nex_day << endl;
+
+                    cout << "profit: " << profit << endl;
+
+                    if (dia_compra != day && dia_venda != nex_day){
+                        max_profit += profit;
+                    } else {
+                        max_profit = profit;
                     }
-                    cout << "buy day: " << buy_day << " sell day: " << sell_day << " i: " << i << endl;
-                    cout << "Operacao do profit: 3 * " << prices[i] << " - (3 * " << prices[sell_day] << " + 3 * " << transaction_cost << ")" << endl;
-                    cout << "  COMECO AQUI : (profit)" << profit << endl;
-                }
-                if (profit > max_profit)
-                {
-                    max_profit = profit;
-                }
-                num_actions = 0;
-            }
-            cout << "Buy day: " << buy_day << " Sell day: " << sell_day << " | Buy money " << 2 * prices[buy_day] + 2 * transaction_cost << " Sell money " << 2 * prices[sell_day] << endl;
+                    
+                    dia_venda = nex_day;
+                    dia_compra = day;
 
-            cout << "num actions" << num_actions << endl;
-            cout << "Operacao do prof: 2 * " << prices[sell_day] << " - (2 * " << prices[buy_day] << " + 2 * " << transaction_cost << ") : " << 2 * prices[sell_day] - (2 * prices[buy_day] + 2 * transaction_cost) << endl;
-            if (acao * prices[sell_day] > acao * prices[buy_day] + acao * transaction_cost && num_actions == 0)
-            {
-                cout << "AAAAAAAAAA" << endl;
-                cout << "Buy day: " << buy_day << " Sell day: " << sell_day << " | Buy money " << 2 * prices[buy_day] + 2 * transaction_cost << " Sell money " << 2 * prices[sell_day] << endl;
-                profit = acao * prices[sell_day] - (acao * prices[buy_day] + acao * transaction_cost);
-                cout << "Profit: " << profit << endl;
-                num_actions = 3;
-            }
-            if (profit > max_profit)
-            {
-                max_profit = profit;
+                    // cout << "dia de compra: " << day << " dia de venda: " << dia_venda << endl;
+                    // cout << "Profit: " << max_profit << endl;
+
+                    if(max_profit > array[day]){
+                        array[day] = max_profit;
+                    }
+                    max_profit = recursivade(prices, transaction_cost, max_days, acao, dia_venda + 1, max_profit, dia_compra);
+
+                }
             }
         }
-        cout << "_______________________________________________________________________________________" << endl;
+
     }
 
-    cout << "Max profit: " << max_profit << endl;
+    return max_profit;
+
+
+}
+
+
+int main()
+{
+    int prices[5] = {1, 5, 4 ,2 ,5};
+
+    int transaction_cost = 1;
+    int acao = 2;
+    int max_days = 5;
+    int array[5] = {0,0,0,0,0};
+
+    cout << recursivade(prices, transaction_cost, max_days, acao, 0, 0, 0, array) << endl;
+
+
 
     return 0;
 }

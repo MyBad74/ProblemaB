@@ -3,70 +3,94 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <algorithm>
+#include <chrono>
 
 using namespace std;
+using namespace std::chrono;
 
-int calculaT1(vector<int> &shares,int dias, int num_actions, int fee)
-{
-    
-    int max_profit = 0;
-    cout << "shares: " << shares[0] << " " << shares[1] << " " << shares[2] << " " << shares[3] << " " << shares[4] << endl;
-    cout << "fee: " << fee << endl;
-    cout << "num_actions: " << num_actions << endl;
-    cout << "dias: " << dias << endl;
+int recursivade(vector<int> &shares, int transaction_cost, int max_days, int acao, int day, int max_profit, int dia_compra){
 
-    for (int buy_day = 0; buy_day < dias; buy_day++)
-    {
-        int num_actions_aux = 0;
-        int profit = 0;
-        // cout << "BOAS" << endl;
+    int dia_venda = 0;
 
-        for (int sell_day = buy_day + 1; sell_day < dias; sell_day++)
-        {
+    for (day; day < max_days; day++){
+        int nex_day = day + 1;
 
-            if (num_actions_aux == num_actions)
-            {
-                for (int i = sell_day; i < 5; i++)
+        for(nex_day; nex_day < max_days; nex_day++){
+
+            if(shares[day] < shares[nex_day] && (acao * shares[nex_day] > acao*(transaction_cost + shares[day])) ){
+
+                int profit = acao * shares[nex_day] - acao*(transaction_cost + shares[day]);
+
+                if(profit >= max_profit)
                 {
-                    for( int j = i + 1; j < 5; j++)
-                    {
-                        if (num_actions * shares[j] > num_actions * shares[i] + num_actions * fee)
-                        {
-                            profit += num_actions * shares[j] - (num_actions * shares[i] + num_actions * fee);
-                        }
-                        //cout << "buy day: " << buy_day << " sell day: " << sell_day << " i: " << i << " j: " << j << endl;
-                        //cout << "Operacao do profit: 2 * " << shares[j] << " - (2 * " << shares[i] << " + 2 * " << fee << ")" << endl;
-                        //cout << "  COMECO AQUI : (profit)" << profit << endl;
+                    if (dia_compra != day && dia_venda != nex_day){
+                        max_profit += profit;
+                    } else {
+                        max_profit = profit;
                     }
-                }
-                if (profit > max_profit)
-                {
-                    max_profit = profit;
-                }
-                num_actions_aux = 0;
-            }
-            // cout << "num actions" << num_actions << endl;
-            // cout << "shares buy day: " << shares[buy_day] << endl;
-            // cout << "Buy day: " << buy_day << " Sell day: " << sell_day << " | Buy money " << num_actions * shares[buy_day] + num_actions * fee << " Sell money " << num_actions * shares[sell_day] << endl;
+                    
+                    dia_venda = nex_day;
+                    dia_compra = day;
 
-            if (num_actions * shares[sell_day] > num_actions * shares[buy_day] + num_actions * fee && num_actions_aux == 0)
-            {
-                // cout << "Buy day: " << buy_day << " Sell day: " << sell_day << " | Buy money " << num_actions * shares[buy_day] + num_actions * fee << " Sell money " << num_actions * shares[sell_day] << endl;
-                profit = num_actions * shares[sell_day] - (num_actions * shares[buy_day] + num_actions * fee);
-                // cout << "Profit: " << profit << endl;
-                num_actions_aux = num_actions;
-            }
-            if (profit > max_profit)
-            {
-                max_profit = profit;
+                    // cout << "dia de compra: " << day << " dia de venda: " << dia_venda << endl;
+                    // cout << "Profit: " << max_profit << endl;
+
+                    max_profit = recursivade(shares, transaction_cost, max_days, acao, dia_venda + 1, max_profit, dia_compra);
+
+                }
             }
         }
-        //cout << "_______________________________________________________________________________________" << endl;
     }
 
-    //cout << "Max profit: " << max_profit << endl;
-
     return max_profit;
+
+}
+
+long long task1(const vector<int>& shares, int d, int k, int r) {
+
+    vector<vector<long long>> dp(d, vector<long long>(2, 0));
+
+    // Inicializa o vector DP
+    dp[0][0] = 0;  // dar hold a 0 shares inicialmente
+    dp[0][1] = -k * (shares[0] + r);  // comprar k shares
+
+    // Preenchimento do vector DP
+    long long maxProfitInWindow = dp[0][0];
+
+    for (int i = 1; i < d; i++) {
+        // Calcula o profit máximo se não tivermos a dar hold a nenhuma share
+        dp[i][0] = max(dp[i-1][0], dp[i-1][1] + k * shares[i]);
+
+        // Calcula o profit máximo se tivermos a dar hold a k shares
+        dp[i][1] = max(dp[i-1][1], dp[i-1][0] - k * (shares[i] + r));
+
+        // Verifica se é mais rentável esperar para vender as shares num dia futuro com maior profit
+        if (i >= k) {
+            maxProfitInWindow = max(maxProfitInWindow, dp[i-k][1] + k * shares[i] - k * r);
+        }
+
+
+        dp[i][0] = max(dp[i][0], maxProfitInWindow);
+    }
+
+    //print dp
+
+    cout << "\nTABELA DP" << endl;
+
+    for (int i = 0; i < d; i++){
+
+        for (int j = 0; j < 2; j++){
+            
+            cout << dp[i][j] << " ";
+        }
+        cout << endl;
+    }
+
+    cout << "---------------------" << endl;
+
+    // no final todas as shares estão vendidas
+    return dp[d-1][0];
 }
 
 int main()
@@ -76,7 +100,7 @@ int main()
 
     cin >> task;
 
-    int max_profits[100];
+    long long int max_profits[100];
 
     if (task == 1)
     {
@@ -106,6 +130,8 @@ int main()
         }
         // cout << valores[0] << " " << valores[1] << " " << valores[2] << " " << valores[3] << endl;
 
+        auto inicio = high_resolution_clock::now();
+
         for (int i = 0; i < valores[0]; i++)
         {
             vector<int> val_share;
@@ -120,10 +146,16 @@ int main()
                 }
                 val_share.push_back(share);
             }
-            // cout << " dias " << valores[1] << " num_actions " << valores[2] << " fee " << valores[3] << endl;
-            // cout << "company number " << i + 1 << ": " << val_share[0] << " " << val_share[1] << " " << val_share[2] << " " << val_share[3] << " " << val_share[4] << endl;
-            // add the results from calculaT1 to the max_profits array
-            max_profits[i] = calculaT1(val_share, valores[1] ,valores[2], valores[3]);
+
+            // print val_share, valores[3], valores[1], valores[2]
+            //val_share são é o custo de cada ação
+            //valores[3] => ultimo valor da linha
+            //valores[1] => numero de dias
+            //valores[2] => preço acrescido
+
+            max_profits[i] = task1(val_share, valores[1], valores[2], valores[3]);
+            
+
         }
 
         // print the max profits
@@ -131,6 +163,17 @@ int main()
         {
             cout << max_profits[i] << endl;
         }
+
+        auto fim = high_resolution_clock::now();
+
+        auto duracao = duration_cast<microseconds>(fim - inicio); // Calcula a duracao em microsegundos
+
+        //make duracao in seconds
+
+        duracao = duracao;
+
+        //cout << "A funcao levou " << duracao.count() << " microssegundos para executar." << endl;
+
     }
 
     if (task == 2)
