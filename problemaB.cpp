@@ -1,232 +1,201 @@
+#include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <cstring>
 #include <fstream>
 #include <iostream>
 #include <vector>
-#include <algorithm>
-#include <chrono>
 
 using namespace std;
 using namespace std::chrono;
 
-int recursivade(vector<int> &shares, int transaction_cost, int max_days, int acao, int day, int max_profit, int dia_compra){
-
-    int dia_venda = 0;
-
-    for (day; day < max_days; day++){
-        int nex_day = day + 1;
-
-        for(nex_day; nex_day < max_days; nex_day++){
-
-            if(shares[day] < shares[nex_day] && (acao * shares[nex_day] > acao*(transaction_cost + shares[day])) ){
-
-                int profit = acao * shares[nex_day] - acao*(transaction_cost + shares[day]);
-
-                if(profit >= max_profit)
-                {
-                    if (dia_compra != day && dia_venda != nex_day){
-                        max_profit += profit;
-                    } else {
-                        max_profit = profit;
-                    }
-                    
-                    dia_venda = nex_day;
-                    dia_compra = day;
-
-                    // cout << "dia de compra: " << day << " dia de venda: " << dia_venda << endl;
-                    // cout << "Profit: " << max_profit << endl;
-
-                    max_profit = recursivade(shares, transaction_cost, max_days, acao, dia_venda + 1, max_profit, dia_compra);
-
-                }
-            }
-        }
-    }
-
-    return max_profit;
-
-}
-
-long long task1(const vector<int>& shares, int d, int k, int r) {
-
-    vector<vector<long long>> dp(d, vector<long long>(2, 0));
-
-    // Inicializa o vector DP
-    dp[0][0] = 0;  // dar hold a 0 shares inicialmente
-    dp[0][1] = -k * (shares[0] + r);  // comprar k shares
-
-    // Preenchimento do vector DP
-    long long maxProfitInWindow = dp[0][0];
-
-    for (int i = 1; i < d; i++) {
-        // Calcula o profit máximo se não tivermos a dar hold a nenhuma share
-        dp[i][0] = max(dp[i-1][0], dp[i-1][1] + k * shares[i]);
-
-        // Calcula o profit máximo se tivermos a dar hold a k shares
-        dp[i][1] = max(dp[i-1][1], dp[i-1][0] - k * (shares[i] + r));
-
-        // Verifica se é mais rentável esperar para vender as shares num dia futuro com maior profit
-        if (i >= k) {
-            maxProfitInWindow = max(maxProfitInWindow, dp[i-k][1] + k * shares[i] - k * r);
-        }
-
-
-        dp[i][0] = max(dp[i][0], maxProfitInWindow);
-    }
-
-    //print dp
-
-    cout << "\nTABELA DP" << endl;
-
-    for (int i = 0; i < d; i++){
-
-        for (int j = 0; j < 2; j++){
-            
-            cout << dp[i][j] << " ";
-        }
-        cout << endl;
-    }
-
-    cout << "---------------------" << endl;
-
-    // no final todas as shares estão vendidas
-    return dp[d-1][0];
-}
-
-int main()
-{
-
+int main() {
     int task;
 
     cin >> task;
 
-    long long int max_profits[100];
-
-    if (task == 1)
+    if (task == 1)  //_______________________________________TASK 1_________________________________________________________
     {
-        vector<int> valores;
-        for (int i = 0; i < 4; i++)
-        {
-
-            int valor;
+        vector<long long> valores;
+        for (int i = 0; i < 4; i++) {
+            long long valor;
             cin >> valor;
-            if (i == 0 && (valor > 100 || valor < 1))
-            {
-                return 0;
-            }
-            if (i == 1 && (valor > 20000 || valor < 1))
-            {
-                return 0;
-            }
-            if (i == 2 && (valor > 200 || valor < 1))
-            {
-                return 0;
-            }
-            if (i == 3 && (valor > 100 || valor < 1))
-            {
-                return 0;
-            }
+
             valores.push_back(valor);
         }
         // cout << valores[0] << " " << valores[1] << " " << valores[2] << " " << valores[3] << endl;
 
-        auto inicio = high_resolution_clock::now();
+        // auto inicio = high_resolution_clock::now();
 
-        for (int i = 0; i < valores[0]; i++)
-        {
-            vector<int> val_share;
+        for (int i = 0; i < valores[0]; i++) {
+            vector<long long> val_share;
 
-            for (int j = 0; j < valores[1]; j++)
-            {
+            for (int j = 0; j < valores[1]; j++) {
                 int share;
                 cin >> share;
-                if (share > 5000 || share < 1)
-                {
+                if (share > 5000 || share < 1) {
                     return 0;
                 }
                 val_share.push_back(share);
             }
 
-            // print val_share, valores[3], valores[1], valores[2]
-            //val_share são é o custo de cada ação
-            //valores[3] => ultimo valor da linha
-            //valores[1] => numero de dias
-            //valores[2] => preço acrescido
+            vector<vector<long long>> dp(valores[1], vector<long long>(2, 0));
 
-            max_profits[i] = task1(val_share, valores[1], valores[2], valores[3]);
-            
+            dp[0][0] = 0;
+            dp[0][1] = -valores[2] * (val_share[0] + valores[3]);
 
+            long long max_profit = 0;
+
+            for (int current_day = 1; current_day < valores[1]; current_day++) {
+                dp[current_day][0] = max(dp[current_day - 1][0], dp[current_day - 1][1] + valores[2] * val_share[current_day]);
+
+                dp[current_day][1] = max(dp[current_day - 1][1], dp[current_day - 1][0] - valores[2] * (val_share[current_day] + valores[3]));
+
+                if (current_day >= valores[2]) {
+                    max_profit = max(max_profit, dp[current_day - valores[2]][1] + valores[2] * val_share[current_day] - valores[2] * valores[3]);
+                }
+
+                dp[current_day][0] = max(dp[current_day][0], max_profit);
+            }
+
+            cout << dp[valores[1] - 1][0] << endl;
         }
-
-        // print the max profits
-        for (int i = 0; i < valores[0]; i++)
-        {
-            cout << max_profits[i] << endl;
-        }
-
-        auto fim = high_resolution_clock::now();
-
-        auto duracao = duration_cast<microseconds>(fim - inicio); // Calcula a duracao em microsegundos
-
-        //make duracao in seconds
-
-        duracao = duracao;
-
-        //cout << "A funcao levou " << duracao.count() << " microssegundos para executar." << endl;
-
     }
 
-    if (task == 2)
+    if (task == 2)  //_______________________________________TASK 2_________________________________________________________
     {
-        vector<int> valores;
-        for (int i = 0; i < 4; i++)
-        {
-
-            int valor;
+        vector<long long> valores;
+        for (int i = 0; i < 4; i++) {
+            long long valor;
             cin >> valor;
-            if (i == 0 && (valor > 100 || valor < 1))
-            {
-                return 0;
-            }
-            if (i == 1 && (valor > 20000 || valor < 1))
-            {
-                return 0;
-            }
-            if (i == 2 && (valor > 200 || valor < 1))
-            {
-                return 0;
-            }
-            if (i == 3 && (valor > 100 || valor < 1))
-            {
-                return 0;
-            }
             valores.push_back(valor);
         }
-    }
-    if (task == 3)
-    {
-        vector<int> valores;
-        for (int i = 0; i < 4; i++)
-        {
 
-            int valor;
+        for (int i = 0; i < valores[0]; i++) {
+            vector<long long> val_share;
+
+            for (int j = 0; j < valores[1]; j++) {
+                int share;
+                cin >> share;
+                if (share > 5000 || share < 1) {
+                    return 0;
+                }
+                val_share.push_back(share);
+            }
+
+            vector<vector<long long>> dp(valores[1], vector<long long>(2, 0));
+
+            dp[0][0] = 0;
+            dp[0][1] = -valores[2] * (val_share[0] + valores[3]);
+
+            long long max_profit = 0;
+
+            for (int current_day = 1; current_day < valores[1]; current_day++) {
+                dp[current_day][0] = max(dp[current_day - 1][0], dp[current_day - 1][1] + valores[2] * val_share[current_day]);
+
+                dp[current_day][1] = max(dp[current_day - 1][1], dp[current_day - 1][0] - valores[2] * (val_share[current_day] + valores[3]));
+
+                if (current_day >= valores[2]) {
+                    max_profit = max(max_profit, dp[current_day - valores[2]][1] + valores[2] * val_share[current_day] - valores[2] * valores[3]);
+                }
+
+                dp[current_day][0] = max(dp[current_day][0], max_profit);
+            }
+
+            cout << dp[valores[1] - 1][0] << endl;
+
+            // percorrer o vetor de tras para a frente dp das acoes e ver quando houve compra print k, quando houve venda print -k e quando nao houve action print 0
+
+            // print dp
+
+            int current_day = valores[1] - 1;
+
+            int lado = 0;
+
+            int valor = dp[current_day][0];
+
+            vector <int> guardar;
+            
+
+            //cout << "Current day: " << current_day << endl;
+
+            while (current_day > 0) {
+                // Çcout << "Curretn day in the while : " << current_day << endl;
+
+                if (lado == 0) {
+                    if (current_day == 1 && dp[current_day][0] == dp[current_day - 1][0]) {
+                        // cout << 0 << " ";
+                        guardar.push_back(0);
+                        // current_day--;
+                    }
+
+                    if (valor == dp[current_day - 1][0]) {
+                        // cout << 0 << " ";
+                        guardar.push_back(0);
+                        // current_day--;
+
+                    } else {
+                        // cout << -valores[2] << " ";
+                        guardar.push_back(-valores[2]);
+                        valor = dp[current_day][1];
+                        lado = 1;
+
+                        if (current_day == 1 && dp[current_day][1] == dp[current_day - 1][1]) {
+                            // cout << valores[2] << " ";
+                            guardar.push_back(valores[2]);
+                            // current_day--;
+                        }
+                    }
+                } else {
+                    if (current_day == 1 && dp[current_day][1] == dp[current_day - 1][1]) {
+                        // cout << valores[2] << " ";
+                        guardar.push_back(valores[2]);
+                        // current_day--;
+                    }
+                    
+                    if (valor == dp[current_day - 1][1]) {
+                        // cout << 0 << " ";
+                        guardar.push_back(0);
+                        // current_day--;
+
+                    } else {
+                        // cout << valores[2] << " ";
+                        guardar.push_back(valores[2]);
+                        //cout << "current day: " << current_day << endl;
+                        valor = dp[current_day][0];
+                        lado = 0;
+
+                        if (current_day == 1 && dp[current_day][0] == dp[current_day - 1][0]) {
+                            // cout << 0 << " ";
+                            guardar.push_back(0);
+                            // current_day--;
+                        }
+                    }
+                }
+                current_day--;
+                // cout << "Current day end of the while : " << current_day << endl;
+            }
+
+            //invert the vector guardar
+
+            for (int i = guardar.size() - 1; i >= 0; i--) {
+                
+                //when it reaches the last element of the vector dont print ""
+                if (i == 0) {
+                    cout << guardar[i];
+                } else {
+                    cout << guardar[i] << " ";
+                }
+            }
+            cout << endl;
+        }
+    }
+    if (task == 3) {
+        vector<long long> valores;
+        for (int i = 0; i < 4; i++) {
+            long long valor;
             cin >> valor;
-            if (i == 0 && (valor > 100 || valor < 1))
-            {
-                return 0;
-            }
-            if (i == 1 && (valor > 25 || valor < 1))
-            {
-                return 0;
-            }
-            if (i == 2 && (valor > 5 || valor < 1))
-            {
-                return 0;
-            }
-            if (i == 3 && (valor > 5 || valor < 1))
-            {
-                return 0;
-            }
+
             valores.push_back(valor);
         }
     }
